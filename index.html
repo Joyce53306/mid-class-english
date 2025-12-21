@@ -3,120 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>中班英文 Lesson 1-10</title>
+    <title>中班英文錄音挑戰版</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        body { font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif; background-color: #E3F2FD; text-align: center; padding: 15px; margin: 0; }
-        .app-container { max-width: 800px; margin: 0 auto; background: white; border-radius: 40px; padding: 20px; border: 8px solid #2196F3; box-shadow: 0 10px 0 #1976D2; }
-        h1 { color: #0D47A1; font-size: 1.8em; margin: 10px 0; }
-        .category-scroll { display: flex; overflow-x: auto; padding: 10px 0; margin-bottom: 15px; gap: 10px; -webkit-overflow-scrolling: touch; }
-        .category-scroll::-webkit-scrollbar { display: none; }
-        .cat-btn { padding: 10px 20px; border-radius: 20px; border: none; background: #90CAF9; color: white; cursor: pointer; font-size: 16px; font-weight: bold; flex-shrink: 0; }
-        .cat-btn.active { background: #1976D2; transform: scale(1.05); }
-        .challenge-box { background: #F1F8FE; border-radius: 30px; padding: 25px; margin: 10px 0; min-height: 250px; }
-        #sentence-text { font-size: 26px; font-weight: bold; color: #333; margin: 20px 0; line-height: 1.4; }
-        .control-btns { display: flex; justify-content: center; gap: 25px; }
-        .round-btn { width: 85px; height: 85px; border-radius: 50%; border: none; cursor: pointer; font-size: 35px; color: white; box-shadow: 0 6px 0 #BBB; transition: 0.1s; }
-        #listen-btn { background: #AB47BC; box-shadow: 0 6px 0 #7B1FA2; }
-        #mic-btn { background: #FFA726; box-shadow: 0 6px 0 #FB8C00; }
-        .round-btn:active { transform: translateY(4px); box-shadow: none; }
-        #feedback { font-size: 30px; height: 50px; margin-top: 15px; color: #FBC02D; font-weight: bold; }
-        .nav-btn { margin-top: 15px; padding: 12px 35px; border-radius: 30px; border: none; background: #2196F3; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
+        :root { --primary: #FF6B6B; --secondary: #4ECDC4; --bg: #F7FFF7; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); margin: 0; padding: 15px; text-align: center; -webkit-tap-highlight-color: transparent; }
+        .header { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; position: sticky; top: 0; z-index: 100; }
+        .lesson-nav { display: flex; overflow-x: auto; gap: 8px; padding: 10px 0; scrollbar-width: none; }
+        .lesson-nav::-webkit-scrollbar { display: none; }
+        .nav-btn { background: #f0f0f0; border: none; padding: 8px 18px; border-radius: 50px; white-space: nowrap; cursor: pointer; font-weight: bold; color: #666; font-size: 14px; }
+        .nav-btn.active { background: var(--secondary); color: white; box-shadow: 0 4px 8px rgba(78,205,196,0.3); }
+        .sentence-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid transparent; transition: 0.3s; }
+        .english { font-size: 24px; color: #2D3436; font-weight: bold; display: block; margin-bottom: 8px; line-height: 1.2; }
+        .chinese { font-size: 16px; color: #636E72; display: block; margin-bottom: 15px; }
+        .btn-group { display: flex; justify-content: center; gap: 20px; }
+        .action-btn { border: none; width: 65px; height: 65px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 28px; transition: transform 0.1s, box-shadow 0.2s; }
+        .action-btn:active { transform: scale(0.9); }
+        .play-btn { background: #FFE66D; box-shadow: 0 4px 0 #E6CF62; }
+        .rec-btn { background: #FF6B6B; color: white; box-shadow: 0 4px 0 #E55B5B; }
+        .rec-btn.recording { animation: pulse 1s infinite; background: #ff0000; box-shadow: none; transform: translateY(4px); }
+        @keyframes pulse { 0% { transform: scale(1) translateY(4px); } 50% { transform: scale(1.05) translateY(4px); } 100% { transform: scale(1) translateY(4px); } }
+        .tips { font-size: 12px; color: #b2bec3; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <h1>🎒 中班英文 Lesson 1-10</h1>
-    <div class="category-scroll" id="menu"></div>
-    <div class="challenge-box">
-        <div id="lesson-info" style="color: #666; font-weight: bold;"></div>
-        <div id="sentence-text">載入中...</div>
-        <div class="control-btns">
-            <button class="round-btn" id="listen-btn" onclick="playAudio()">👂</button>
-            <button class="round-btn" id="mic-btn" onclick="startMic()">🎤</button>
-        </div>
-        <div id="feedback"></div>
-    </div>
-    <button class="nav-btn" onclick="nextQuestion()">下一句 ➡️</button>
+<div class="header">
+    <h2 style="margin:0 0 10px 0; color:var(--primary); font-size: 20px;">🎤 英語小老師錄音挑戰</h2>
+    <div class="lesson-nav" id="lessonNav"></div>
 </div>
+
+<div id="content"></div>
+<p class="tips">提示：點擊 🔊 聽老師說，點擊 🎤 開始錄音，再點一次 ⏹️ 聽聽自己說的喔！</p>
 
 <script>
     const library = {
-        "L1 顏色": [{t:"I mixed the red and blue. It made purple."}, {t:"I mixed the red and yellow. It made orange."}, {t:"I mixed the blue and yellow. It made green."}],
-        "L2 五感": [{t:"It feels sharp."}, {t:"It taste sweet."}, {t:"It sounds noisy."}, {t:"It looks funny."}, {t:"It smells like feel."}],
-        "L3 形狀": [{t:"That is not just a triangle. That is a nose."}, {t:"That is not just a circle. That is a snowball."}, {t:"That is not just a rectangle. That is a scarf."}, {t:"That is not just a square. That is a hat."}],
-        "L4 年齡": [{t:"How old are you?"}, {t:"I am four."}, {t:"I am five."}, {t:"I am six."}],
-        "L5 交通": [{t:"How do you go to school?"}, {t:"I go to school by bike."}, {t:"I go to school by scooter."}, {t:"I go to school by bus."}, {t:"I walk to school."}, {t:"I go to school by train."}, {t:"I go to school by car."}],
-        "L6 喜好": [{t:"I don't like blue T-shirt."}, {t:"I don't like green peppers."}, {t:"I don't like red hats."}, {t:"I don't like orange tomatoes."}, {t:"I don't like yellow bees."}, {t:"David gets angry!"}],
-        "L7 大衛找物": [{t:"I don't have any salt. David goes to get some salt."}, {t:"I don't have any apples. David goes to get some apples."}, {t:"I don't have any eggs. David goes to get a chicken."}, {t:"I don't have any milk. David goes to milk a cow."}],
-        "L8 蛋糕": [{t:"Can dad have a cupcake?"}, {t:"Can brother and sister have cupcakes?"}, {t:"Can grandma and grandpa have cupcakes?"}],
-        "L9 興趣": [{t:"Sara likes to play dress up."}, {t:"Matts likes to dance backward and upside down."}, {t:"Joy likes to sing all day."}, {t:"Paul likes to talk to animals and dress like a frog."}],
-        "L10 一週": [{t:"On Sunday David slept in a tree."}, {t:"On Monday David mixed red paint with his shampoo."}, {t:"On Tuesday David twisted Sara's hair with bubble gum."}, {t:"On Wednesday David washed Rusty with chocolate milk."}, {t:"On Thursday David tickled a frog."}, {t:"On Friday David made his bike fly."}]
+        "L1 顏色": [ {e:"The apple is red.", c:"蘋果是紅色的"}, {e:"The banana is yellow.", c:"香蕉是黃色的"}, {e:"The leaf is green.", c:"葉子是綠色的"}, {e:"The sky is blue.", c:"天空是藍色的"} ],
+        "L2 五感": [ {e:"It looks pretty.", c:"它看起來很漂亮"}, {e:"It sounds loud.", c:"它聽起來很大聲"}, {e:"It smells sweet.", c:"它聞起來香香的"}, {e:"It tastes yummy.", c:"它嚐起來很好吃"} ],
+        "L3 動作": [ {e:"I can jump.", c:"我會跳"}, {e:"I can run.", c:"我會跑"}, {e:"I can swim.", c:"我會游泳"}, {e:"I can dance.", c:"我會跳舞"} ],
+        "L4 情緒": [ {e:"I am happy.", c:"我很開心"}, {e:"I am sad.", c:"我很難過"}, {e:"I am angry.", c:"我很生氣"}, {e:"I am sleepy.", c:"我很睏"} ],
+        "L5 身體": [ {e:"Touch your nose.", c:"摸摸你的鼻子"}, {e:"Clap your hands.", c:"拍拍你的手"}, {e:"Stomp your feet.", c:"跺跺你的腳"}, {e:"Close your eyes.", c:"閉上你的眼睛"} ],
+        "L6 天氣": [ {e:"It is sunny.", c:"今天是晴天"}, {e:"It is rainy.", c:"下雨了"}, {e:"It is windy.", c:"風很大"}, {e:"It is snowy.", c:"下雪了"} ],
+        "L7 數字": [ {e:"I have one nose.", c:"我有一個鼻子"}, {e:"I have two eyes.", c:"我有兩隻眼睛"}, {e:"I have five fingers.", c:"我有五隻手指頭"}, {e:"I have ten toes.", c:"我有十個腳趾頭"} ],
+        "L8 家人": [ {e:"This is my daddy.", c:"這是我的爸爸"}, {e:"This is my mommy.", c:"這是我的媽媽"}, {e:"I love my brother.", c:"我愛我的哥哥/弟弟"}, {e:"I love my sister.", c:"我愛我的姊姊/妹妹"} ],
+        "L9 興趣": [ {e:"Sara likes to dress up.", c:"Sara 喜歡打扮"}, {e:"Matts likes to dance.", c:"Matts 喜歡跳舞"}, {e:"Joy likes to sing.", c:"Joy 喜歡唱歌"}, {e:"Paul likes to talk to animals.", c:"Paul 喜歡跟動物說話"} ],
+        "L10 一週": [ {e:"On Monday, David slept in a tree.", c:"星期一，大衛睡在樹上"}, {e:"On Tuesday, David popped a bubble gum.", c:"星期二，大衛吹破了泡泡糖"}, {e:"On Wednesday, David had chocolate milk.", c:"星期三，大衛喝了巧克力牛奶"}, {e:"On Friday, David felt very happy.", c:"星期五，大衛覺得很開心"} ]
     };
 
-    let currentCat = "L1 顏色";
-    let currentIdx = 0;
+    let mediaRecorder;
+    let audioChunks = [];
+    let currentLesson = Object.keys(library)[0];
 
-    function initMenu() {
-        const menu = document.getElementById('menu');
-        Object.keys(library).forEach(cat => {
+    function init() {
+        const nav = document.getElementById('lessonNav');
+        Object.keys(library).forEach(lesson => {
             const btn = document.createElement('button');
-            btn.className = 'cat-btn';
-            btn.innerText = cat;
-            btn.onclick = () => { currentCat = cat; currentIdx = 0; updateUI(); toggleBtn(btn); };
-            menu.appendChild(btn);
+            btn.className = `nav-btn ${lesson === currentLesson ? 'active' : ''}`;
+            btn.innerText = lesson;
+            btn.onclick = () => {
+                currentLesson = lesson;
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render();
+            };
+            nav.appendChild(btn);
         });
-        menu.firstChild.classList.add('active');
+        render();
     }
 
-    function toggleBtn(activeBtn) {
-        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-        activeBtn.classList.add('active');
+    function render() {
+        const container = document.getElementById('content');
+        container.innerHTML = library[currentLesson].map((item, idx) => `
+            <div class="sentence-card">
+                <span class="english">${item.e}</span>
+                <span class="chinese">${item.c}</span>
+                <div class="btn-group">
+                    <button class="action-btn play-btn" onclick="speak('${item.e.replace(/'/g, "\\'")}')">🔊</button>
+                    <button class="action-btn rec-btn" id="rec-${idx}" onclick="toggleRecord('${idx}')">🎤</button>
+                </div>
+            </div>
+        `).join('');
     }
 
-    function updateUI() {
-        const item = library[currentCat][currentIdx];
-        document.getElementById('lesson-info').innerText = currentCat;
-        document.getElementById('sentence-text').innerText = item.t;
-        document.getElementById('feedback').innerText = "";
+    function speak(text) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'en-US';
+        msg.rate = 0.8; // 稍微放慢一點點，讓中班孩子聽得更清楚
+        window.speechSynthesis.speak(msg);
     }
 
-    function playAudio() {
-        const utter = new SpeechSynthesisUtterance(library[currentCat][currentIdx].t);
-        utter.lang = 'en-US'; utter.rate = 0.75;
-        window.speechSynthesis.speak(utter);
-    }
+    async function toggleRecord(id) {
+        const btn = document.getElementById(`rec-${id}`);
+        
+        if (!mediaRecorder || mediaRecorder.state === "inactive") {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const url = URL.createObjectURL(blob);
+                    const audio = new Audio(url);
+                    audio.play();
+                };
 
-    function startMic() {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
-        recognition.start();
-        document.getElementById('feedback').innerText = "👂 正在聽...";
-        recognition.onresult = (e) => {
-            const spoken = e.results[0][0].transcript.toLowerCase();
-            const target = library[currentCat][currentIdx].t.toLowerCase();
-            const targetWords = target.replace(/[.,!]/g, "").split(' ');
-            // 只要對到最後幾個關鍵字就算成功
-            const isMatch = targetWords.slice(-3).some(word => spoken.includes(word));
-            if(isMatch) {
-                document.getElementById('feedback').innerHTML = "⭐⭐⭐ Great!";
-                const cheers = new SpeechSynthesisUtterance("Great job!");
-                cheers.lang = 'en-US'; window.speechSynthesis.speak(cheers);
-            } else {
-                document.getElementById('feedback').innerText = "再試一次！🐢";
+                mediaRecorder.start();
+                btn.classList.add('recording');
+                btn.innerText = "⏹️";
+            } catch (err) {
+                alert("請允許麥克風權限才能錄音喔！");
             }
-        };
+        } else {
+            mediaRecorder.stop();
+            btn.classList.remove('recording');
+            btn.innerText = "🎤";
+        }
     }
 
-    function nextQuestion() {
-        currentIdx = (currentIdx + 1) % library[currentCat].length;
-        updateUI();
-    }
-
-    initMenu();
-    updateUI();
+    window.onload = init;
 </script>
 </body>
-
 </html>
