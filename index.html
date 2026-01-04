@@ -22,11 +22,14 @@
         .rec-btn.recording { animation: pulse 1s infinite; background: #ff0000; box-shadow: none; transform: translateY(4px); }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         .footer-tips { font-size: 12px; color: #999; margin-top: 20px; }
+        /* Line 提醒樣式 */
+        #line-notice { display: none; background: #FFF9C4; color: #856404; padding: 10px; margin-bottom: 15px; border-radius: 10px; font-size: 13px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
 <div class="header">
+    <div id="line-notice">💡 偵測到您正在使用 Line 瀏覽器，錄音功能可能受限。請點擊右下角「…」圖示，並選擇「以預設瀏覽器開啟」或「以 Safari 開啟」。</div>
     <h2 style="margin:0 0 10px 0; color:var(--primary); font-size: 18px;">🌟 英語口說挑戰 (L1-L10)</h2>
     <div class="lesson-nav" id="lessonNav"></div>
 </div>
@@ -42,65 +45,31 @@
             {e:"I mixed the blue and yellow. It made green."}
         ],
         "L2 五感感受": [
-            {e:"It feels sharp."},
-            {e:"It tastes sweet."},
-            {e:"It sounds noisy."},
-            {e:"It looks funny."},
-            {e:"It smells like feet."}
+            {e:"It feels sharp."}, {e:"It tastes sweet."}, {e:"It sounds noisy."}, {e:"It looks funny."}, {e:"It smells like feet."}
         ],
         "L3 形狀與想像": [
-            {e:"That’s not just a triangle. That’s a nose."},
-            {e:"That’s not just a circle. That’s a snowball."},
-            {e:"That’s not just a rectangle. That’s a scarf."},
-            {e:"That’s not just a square. That’s a hat."}
+            {e:"That’s not just a triangle. That’s a nose."}, {e:"That’s not just a circle. That’s a snowball."}, {e:"That’s not just a rectangle. That’s a scarf."}, {e:"That’s not just a square. That’s a hat."}
         ],
         "L4 你幾歲": [
-            {e:"How old are you?"},
-            {e:"I am four."},
-            {e:"I am five."},
-            {e:"I am six."}
+            {e:"How old are you?"}, {e:"I am four."}, {e:"I am five."}, {e:"I am six."}
         ],
         "L5 上學交通": [
-            {e:"How do you go to school?"},
-            {e:"I go to school by bike."},
-            {e:"I go to school by scooter."},
-            {e:"I go to school by bus."},
-            {e:"I walk to school."},
-            {e:"I go to school by train."},
-            {e:"I go to school by car."}
+            {e:"How do you go to school?"}, {e:"I go to school by bike."}, {e:"I go to school by scooter."}, {e:"I go to school by bus."}, {e:"I walk to school."}, {e:"I go to school by train."}, {e:"I go to school by car."}
         ],
         "L6 我不喜歡": [
-            {e:"I don’t like blue T-shirt."},
-            {e:"I don’t like green peppers."},
-            {e:"I don’t like red hats."},
-            {e:"I don’t like orange tomatoes."},
-            {e:"I don’t like yellow bees."},
-            {e:"David gets angry!"}
+            {e:"I don’t like blue T-shirt."}, {e:"I don’t like green peppers."}, {e:"I don’t like red hats."}, {e:"I don’t like orange tomatoes."}, {e:"I don’t like yellow bees."}, {e:"David gets angry!"}
         ],
         "L7 大衛幫忙": [
-            {e:"I don’t have any salt. David goes to get some salt."},
-            {e:"I don’t have any apples. David goes to get some apples."},
-            {e:"I don’t have any eggs. David goes to get a chicken."},
-            {e:"I don’t have any milk. David goes to milk a cow."}
+            {e:"I don’t have any salt. David goes to get some salt."}, {e:"I don’t have any apples. David goes to get some apples."}, {e:"I don’t have any eggs. David goes to get a chicken."}, {e:"I don’t have any milk. David goes to milk a cow."}
         ],
         "L8 蛋糕分享": [
-            {e:"Can dad have a cupcake?"},
-            {e:"Can brother and sister have cupcakes?"},
-            {e:"Can grandma and grandpa have cupcakes?"}
+            {e:"Can dad have a cupcake?"}, {e:"Can brother and sister have cupcakes?"}, {e:"Can grandma and grandpa have cupcakes?"}
         ],
         "L9 同學興趣": [
-            {e:"Sara likes to play dress up."},
-            {e:"Matts likes to dance backward and upside down."},
-            {e:"Joy likes to sing all day."},
-            {e:"Paul likes to talk to animals and dress like a frog."}
+            {e:"Sara likes to play dress up."}, {e:"Matts likes to dance backward and upside down."}, {e:"Joy likes to sing all day."}, {e:"Paul likes to talk to animals and dress like a frog."}
         ],
         "L10 大衛一週": [
-            {e:"On Sunday David slept in a tree."},
-            {e:"On Monday David mixed red paint with his shampoo."},
-            {e:"On Tuesday David twisted Sara’s hair with bubble gum."},
-            {e:"On Wednesday David washed Rusty with chocolate milk."},
-            {e:"On Thursday David tickled a frog."},
-            {e:"On Friday David made his bike fly."}
+            {e:"On Sunday David slept in a tree."}, {e:"On Monday David mixed red paint with his shampoo."}, {e:"On Tuesday David twisted Sara’s hair with bubble gum."}, {e:"On Wednesday David washed Rusty with chocolate milk."}, {e:"On Thursday David tickled a frog."}, {e:"On Friday David made his bike fly."}
         ]
     };
 
@@ -110,6 +79,11 @@
 
     function init() {
         const nav = document.getElementById('lessonNav');
+        // 偵測 Line
+        if (/Line/i.test(navigator.userAgent)) {
+            document.getElementById('line-notice').style.display = 'block';
+        }
+
         Object.keys(library).forEach(lesson => {
             const btn = document.createElement('button');
             btn.className = `nav-btn ${lesson === currentLesson ? 'active' : ''}`;
@@ -139,6 +113,7 @@
     }
 
     function speak(text) {
+        window.speechSynthesis.cancel(); // 停止之前的播放
         const msg = new SpeechSynthesisUtterance(text);
         msg.lang = 'en-US';
         msg.rate = 0.75;
@@ -147,29 +122,57 @@
 
     async function toggleRecord(id) {
         const btn = document.getElementById(`rec-${id}`);
-        if (!mediaRecorder || mediaRecorder.state === "inactive") {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(audioChunks, { type: 'audio/wav' });
-                    const url = URL.createObjectURL(blob);
-                    new Audio(url).play();
-                };
-                mediaRecorder.start();
-                btn.classList.add('recording');
-                btn.innerText = "⏹️";
-            } catch (err) { alert("請開啟麥克風權限才能錄音喔！"); }
-        } else {
+        
+        if (mediaRecorder && mediaRecorder.state === "recording") {
             mediaRecorder.stop();
             btn.classList.remove('recording');
             btn.innerText = "🎤";
+            return;
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            // 關鍵修正：iOS 不支援 wav，需動態判斷格式
+            let mimeType = 'audio/webm';
+            if (!MediaRecorder.isTypeSupported(mimeType)) {
+                mimeType = 'audio/mp4'; 
+            }
+
+            mediaRecorder = new MediaRecorder(stream, { mimeType });
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) audioChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(audioChunks, { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const audio = new Audio(url);
+                
+                // 針對 iOS 優化播放
+                audio.play().catch(e => console.log("iOS 播放被攔截:", e));
+
+                // 錄音完畢立即釋放麥克風，解決 iOS 佔用問題
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            mediaRecorder.start();
+            btn.classList.add('recording');
+            btn.innerText = "⏹️";
+
+        } catch (err) {
+            console.error(err);
+            if (/Line/i.test(navigator.userAgent)) {
+                alert("Line 瀏覽器限制錄音，請點選右下角並改用 Safari 開啟！");
+            } else {
+                alert("錄音失敗：請確認開啟麥克風權限且網址為 HTTPS。");
+            }
         }
     }
+
     window.onload = init;
 </script>
 </body>
 </html>
-
